@@ -6,7 +6,9 @@ async function getWeather() {
     return;
   }
 
-  const url = `/.netlify/functions/weather?city=${city}`;
+const apiKey = "c1598777f4684e31f64db6f444f5dfed";
+const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
 
 
   try {
