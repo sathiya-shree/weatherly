@@ -1,19 +1,25 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weather App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weatherly</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>Weatherly</h1>
-    <input type="text" id="city" placeholder="Enter city name" />
-    <button onclick="getWeather()">Get Weather</button>
+    <input type="text" id="cityInput" placeholder="Enter city name (for example: New York)" />
+    <button onclick="addCity()">Add City</button>
+    <button onclick="getWeatherForAll()">Get Weather for All</button>
+
+    <p><small>Max 4 cities</small></p>
+
+    <ul id="cityList"></ul>
+
     <div id="weatherResult"></div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
