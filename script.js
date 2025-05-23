@@ -1,10 +1,10 @@
 const defaultCities = ['Paris', 'London', 'Mumbai', 'Coimbatore'];
-const maxUserCities = 4;
-let userCities = [];
+const defaultCitiesContainer = document.getElementById('defaultCities');
+const searchedCityWeather = document.getElementById('searchedCityWeather');
 
-function getWeatherIcon(main) {
-  const weatherMap = {
-    Clear: '☀️',
+function weatherToEmoji(main) {
+  const map = {
+    Clear: '🌞',
     Clouds: '☁️',
     Rain: '🌧️',
     Drizzle: '🌦️',
@@ -20,92 +20,76 @@ function getWeatherIcon(main) {
     Squall: '🌬️',
     Tornado: '🌪️',
   };
-  return weatherMap[main] || '🌈';
+  return map[main] || '🌈';
 }
 
-async function getWeather(city) {
-  const url = `/.netlify/functions/weather?city=${encodeURIComponent(city)}`;
+async function fetchCityWeather(city) {
+  const apiKey = 'YOUR_OPENWEATHER_API_KEY'; // replace this
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('City not found');
+  const data = await res.json();
+  return {
+    name: data.name,
+    country: data.sys.country,
+    temp: data.main.temp,
+    weather: data.weather[0].main,
+    humidity: data.main.humidity,
+    emoji: weatherToEmoji(data.weather[0].main),
+  };
+}
+
+function createCityCard(city) {
+  return `
+    <div class="city-card">
+      <div class="city-name">${city.name}, ${city.country}</div>
+      <div class="weather-emoji">${city.emoji}</div>
+      <div class="weather-info">
+        🌡 Temperature: ${city.temp.toFixed(1)} °C<br />
+        🌥 Weather: ${city.weather}<br />
+        💧 Humidity: ${city.humidity}%
+      </div>
+    </div>
+  `;
+}
+
+async function displayDefaultCities() {
+  defaultCitiesContainer.innerHTML = 'Loading...';
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Error fetching weather');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    return { error: error.message, city };
+    const promises = defaultCities.map(city => fetchCityWeather(city));
+    const results = await Promise.all(promises);
+    defaultCitiesContainer.innerHTML = results.map(createCityCard).join('');
+  } catch {
+    defaultCitiesContainer.innerHTML = 'Failed to load default cities weather.';
   }
 }
 
-function createWeatherCard(data) {
-  const card = document.createElement('div');
-  card.className = 'weather-card';
-
-  if (data.error) {
-    card.innerHTML = `<h2>${data.city || 'Unknown city'}</h2><p class="error-message">${data.error}</p>`;
-  } else {
-    const icon = getWeatherIcon(data.weather[0].main);
-    card.innerHTML = `
-      <h2>${data.name}, ${data.sys.country}</h2>
-      <div class="weather-icon">${icon}</div>
-      <p>Temperature: ${data.main.temp} °C</p>
-      <p>Weather: ${data.weather[0].main}</p>
-      <p>Humidity: ${data.main.humidity}%</p>
-    `;
-  }
-  return card;
-}
-
-async function loadDefaultCitiesWeather() {
-  const container = document.getElementById('defaultWeather');
-  container.innerHTML = '';
-
-  for (const city of defaultCities) {
-    const data = await getWeather(city);
-    container.appendChild(createWeatherCard(data));
-  }
-}
-
-async function addUserCity(city) {
-  const userWeatherContainer = document.getElementById('userWeather');
-
+async function showSearchedCityWeather() {
+  const city = document.getElementById('cityInput').value.trim();
   if (!city) {
-    alert('Please enter a city name');
+    searchedCityWeather.innerHTML = `<p>Please enter a city name.</p>`;
     return;
   }
-
-  if (userCities.length >= maxUserCities) {
-    alert(`You can add up to ${maxUserCities} cities.`);
-    return;
+  searchedCityWeather.innerHTML = `<p>Loading...</p>`;
+  try {
+    const data = await fetchCityWeather(city);
+    searchedCityWeather.innerHTML = `
+      <h2>${data.name}, ${data.country}</h2>
+      <div class="weather-emoji">${data.emoji}</div>
+      <div class="weather-info">
+        🌡 Temperature: ${data.temp.toFixed(1)} °C<br />
+        🌥 Weather: ${data.weather}<br />
+        💧 Humidity: ${data.humidity}%
+      </div>
+    `;
+  } catch (e) {
+    searchedCityWeather.innerHTML = `<p style="color:#c00;">${e.message}</p>`;
   }
-
-  // Avoid duplicates (case insensitive)
-  if (
-    userCities.some(c => c.toLowerCase() === city.toLowerCase()) ||
-    defaultCities.some(c => c.toLowerCase() === city.toLowerCase())
-  ) {
-    alert('City already displayed!');
-    return;
-  }
-
-  userCities.push(city);
-
-  const data = await getWeather(city);
-  userWeatherContainer.appendChild(createWeatherCard(data));
 }
 
-window.onload = () => {
-  loadDefaultCitiesWeather();
+document.getElementById('getWeatherBtn').addEventListener('click', showSearchedCityWeather);
+document.getElementById('cityInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') showSearchedCityWeather();
+});
 
-  const cityInput = document.getElementById('cityInput');
-  cityInput.addEventListener('keypress', function (event) {
-    if (event.key === 'Enter') {
-      const city = cityInput.value.trim();
-      if (city) {
-        addUserCity(city);
-        cityInput.value = '';
-      }
-    }
-  });
-};
+displayDefaultCities();
