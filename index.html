@@ -1,148 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Weatherly</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weatherly</title>
+  <style>
+    /* Background with moving clouds */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to top, #87ceeb 0%, #e0f7ff 100%);
+      overflow-x: hidden;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    /* Cloud shapes and animation */
+    .clouds {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .cloud {
+      position: absolute;
+      background: #fff;
+      background: linear-gradient(135deg, #f0f4f8, #d9e6f2);
+      border-radius: 50%;
+      opacity: 0.8;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.05));
+      animation: drift 40s linear infinite;
+    }
+    .cloud.small {
+      width: 80px; height: 50px;
+      top: 20%;
+      animation-duration: 35s;
+    }
+    .cloud.medium {
+      width: 140px; height: 80px;
+      top: 40%;
+      animation-duration: 50s;
+    }
+    .cloud.large {
+      width: 220px; height: 120px;
+      top: 60%;
+      animation-duration: 70s;
+    }
+    .cloud:nth-child(1) { left: -220px; animation-delay: 0s; }
+    .cloud:nth-child(2) { left: -140px; animation-delay: 15s; }
+    .cloud:nth-child(3) { left: -180px; animation-delay: 25s; }
+    .cloud:nth-child(4) { left: -80px; animation-delay: 40s; }
+    @keyframes drift {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(120vw); }
+    }
 
-<style>
-  /* Emoji support + base */
-  body {
-    margin: 0;
-    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-    overflow-x: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+    h1 {
+      margin-bottom: 10px;
+      color: #004d99;
+      text-shadow: 1px 1px 2px #a3c5f7;
+    }
 
-  /* Container styling */
-  .container {
-    background: rgba(255 255 255 / 0.85);
-    padding: 40px 50px;
-    border-radius: 20px;
-    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    position: relative;
-    z-index: 10;
-  }
+    /* Container for the cities */
+    .default-cities {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      z-index: 1;
+      position: relative;
+    }
 
-  h1 {
-    font-size: 3rem;
-    margin-bottom: 25px;
-    color: #1a1a1a;
-    text-shadow: 0 2px 3px rgba(0,0,0,0.15);
-  }
+    .city-card {
+      background: rgba(255 255 255 / 0.9);
+      border-radius: 12px;
+      padding: 18px 25px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+      width: 200px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .city-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+    .city-name {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #0056b3;
+    }
+    .weather-emoji {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    .weather-info {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #222;
+    }
 
-  input {
-    width: 100%;
-    padding: 14px 15px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    box-shadow: 0 5px 15px rgba(116,235,213,0.5);
-    transition: box-shadow 0.3s ease;
-  }
-  input:focus {
-    outline: none;
-    box-shadow: 0 0 15px #74ebd5;
-  }
+    /* Input and button */
+    .search-container {
+      margin-bottom: 30px;
+      display: flex;
+      gap: 10px;
+      z-index: 1;
+      position: relative;
+    }
+    input[type="text"] {
+      padding: 12px 18px;
+      font-size: 1rem;
+      border: 2px solid #5a9bd4;
+      border-radius: 25px;
+      width: 250px;
+      outline-color: #4a8cd8;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #2c6fbd;
+      box-shadow: 0 0 8px #2c6fbdaa;
+    }
+    button {
+      padding: 12px 25px;
+      background: #2c6fbd;
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(44,111,189,0.4);
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1b4a7a;
+    }
 
-  #weatherResult {
-    font-size: 1.2rem;
-    color: #333;
-    margin-top: 10px;
-    line-height: 1.6;
-  }
-
-  /* Cloud animation */
-  .clouds {
-    position: fixed;
-    top: 0;
-    left: -200px;
-    width: 200vw;
-    height: 100vh;
-    background:
-      url('https://i.ibb.co/4pDNDk1/cloud1.png') 0 50px repeat-x,
-      url('https://i.ibb.co/t2PxYFk/cloud2.png') 0 150px repeat-x,
-      url('https://i.ibb.co/vHc89Kj/cloud3.png') 0 250px repeat-x;
-    background-size: 300px 100px;
-    animation: moveClouds 120s linear infinite;
-    opacity: 0.3;
-    z-index: 1;
-  }
-
-  @keyframes moveClouds {
-    0% { background-position: 0 50px, 0 150px, 0 250px; }
-    100% { background-position: 2000px 50px, 1800px 150px, 1600px 250px; }
-  }
-</style>
+    /* Display searched city */
+    #searchedCityWeather {
+      margin-top: 20px;
+      width: 280px;
+      background: rgba(255 255 255 / 0.9);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      font-size: 1rem;
+      color: #333;
+      z-index: 1;
+      position: relative;
+      min-height: 120px;
+    }
+    #searchedCityWeather h2 {
+      margin-bottom: 8px;
+      color: #004080;
+    }
+    #searchedCityWeather .weather-emoji {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
 <body>
+  <div class="clouds" aria-hidden="true">
+    <div class="cloud small"></div>
+    <div class="cloud medium"></div>
+    <div class="cloud large"></div>
+    <div class="cloud small"></div>
+  </div>
 
-<!-- Clouds background -->
-<div class="clouds"></div>
+  <h1>Weatherly</h1>
 
-<div class="container">
-  <h1>Weatherly ☁️🌤️</h1>
-  <input type="text" id="city" placeholder="Enter city name to get weather" autocomplete="off" />
-  <div id="weatherResult">Loading default city weather...</div>
-</div>
+  <div class="default-cities" id="defaultCities">
+    <!-- Default cities weather will be inserted here -->
+  </div>
 
-<script>
-  // Default cities to show weather for
-  const defaultCities = ['Paris', 'London', 'Mumbai', 'Coimbatore'];
+  <div class="search-container">
+    <input type="text" id="cityInput" placeholder="Enter city name" aria-label="City name" />
+    <button id="getWeatherBtn">Enter</button>
+  </div>
 
-  // Function to get weather for a city by calling your Netlify function
-  async function getWeather(city) {
-    const url = `/.netlify/functions/weather?city=${encodeURIComponent(city)}`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('City not found');
-      const data = await response.json();
+  <div id="searchedCityWeather"></div>
+
+  <script>
+    // Default cities data
+    const defaultCities = [
+      {
+        name: "Paris",
+        country: "FR",
+        temp: 17.77,
+        weather: "Clear",
+        humidity: 36,
+        emoji: "🌞"
+      },
+      {
+        name: "London",
+        country: "GB",
+        temp: 18.81,
+        weather: "Clouds",
+        humidity: 47,
+        emoji: "☁️"
+      },
+      {
+        name: "Mumbai",
+        country: "IN",
+        temp: 28.99,
+        weather: "Haze",
+        humidity: 74,
+        emoji: "🌫️"
+      },
+      {
+        name: "Coimbatore",
+        country: "IN",
+        temp: 23.88,
+        weather: "Mist",
+        humidity: 94,
+        emoji: "🌁"
+      },
+    ];
+
+    const defaultCitiesContainer = document.getElementById('defaultCities');
+    const searchedCityWeather = document.getElementById('searchedCityWeather');
+
+    // Function to create city card HTML
+    function createCityCard(city) {
       return `
-        <strong>${data.name}, ${data.sys.country}</strong><br>
-        🌡 Temperature: ${data.main.temp} °C<br>
-        🌥 Weather: ${data.weather[0].main}<br>
-        💧 Humidity: ${data.main.humidity}%
+        <div class="city-card">
+          <div class="city-name">${city.name}, ${city.country}</div>
+          <div class="weather-emoji">${city.emoji}</div>
+          <div class="weather-info">
+            🌡 Temperature: ${city.temp.toFixed(1)} °C<br />
+            🌥 Weather: ${city.weather}<br />
+            💧 Humidity: ${city.humidity}%
+          </div>
+        </div>
       `;
-    } catch (e) {
-      return `<em>Error fetching weather for ${city}</em>`;
     }
-  }
 
-  // Show default cities weather on load
-  async function showDefaultWeather() {
-    const container = document.getElementById('weatherResult');
-    container.innerHTML = '';
-    for (const city of defaultCities) {
-      const weatherHTML = await getWeather(city);
-      const cityDiv = document.createElement('div');
-      cityDiv.style.marginBottom = '18px';
-      cityDiv.innerHTML = weatherHTML;
-      container.appendChild(cityDiv);
+    // Display default cities weather side-by-side
+    function displayDefaultCities() {
+      defaultCitiesContainer.innerHTML = defaultCities.map(createCityCard).join('');
     }
-  }
 
-  // Search input event to show searched city weather separately
-  document.getElementById('city').addEventListener('input', async function() {
-    const city = this.value.trim();
-    const container = document.getElementById('weatherResult');
-    if (!city) {
-      showDefaultWeather();
-      return;
+    // Emoji mapping based on weather
+    function weatherToEmoji(weather) {
+      weather = weather.toLowerCase();
+      if (weather.includes('clear')) return "🌞";
+      if (weather.includes('cloud')) return "☁️";
+      if (weather.includes('rain')) return "🌧️";
+      if (weather.includes('haze')) return "🌫️";
+      if (weather.includes('mist')) return "🌁";
+      if (weather.includes('snow')) return "❄️";
+      return "🌥️";
     }
-    container.innerHTML = await getWeather(city);
-  });
 
-  // Initial load
-  showDefaultWeather();
-</script>
+    // Fetch weather for entered city using OpenWeather API
+    async function fetchCityWeather(city) {
+      const apiKey = 'YOUR_OPENWEATHER_API_KEY'; // REPLACE with your real API key
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
 
+      try {
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error('City not found or API error');
+        }
+        const data = await res.json();
+
+        return {
+          name: data.name,
+          country: data.sys.country,
+          temp: data.main.temp,
+          weather: data.weather[0].main,
+          humidity: data.main.humidity,
+          emoji: weatherToEmoji(data.weather[0].main)
+        };
+      } catch (e) {
+        throw e;
+      }
+    }
+
+    // Show entered city weather
+    async function showSearchedCityWeather() {
+      const city = document.getElementById('cityInput').value.trim();
+      if (!city) {
+        searchedCityWeather.innerHTML = `<p>Please enter a city name.</p>`;
+        return;
+      }
+
+      searchedCityWeather.innerHTML = `<p>Loading...</p>`;
+
+      try {
+        const cityWeather = await fetchCityWeather(city);
+        searchedCityWeather.innerHTML = `
+          <h2>${cityWeather.name}, ${cityWeather.country}</h2>
+          <div class="weather-emoji">${cityWeather.emoji}</div>
+          <div class="weather-info">
+            🌡 Temperature: ${cityWeather.temp.toFixed(1)} °C<br />
+            🌥 Weather: ${cityWeather.weather}<br />
+            💧 Humidity: ${cityWeather.humidity}%
+          </div>
+        `;
+      } catch (error) {
+        searchedCityWeather.innerHTML = `<p style="color:#c00;">${error.message}</p>`;
+      }
+    }
+
+    document.getElementById('getWeatherBtn').addEventListener('click', showSearchedCityWeather);
+
+    // Also allow pressing Enter key in input field
+    document.getElementById('cityInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        showSearchedCityWeather();
+      }
+    });
+
+    // On load, show default cities
+    displayDefaultCities();
+  </script>
 </body>
 </html>
