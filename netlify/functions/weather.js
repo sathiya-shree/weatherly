@@ -21,7 +21,6 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ error: "City not found or API error" }),
       };
     }
-
     const data = await response.json();
 
     return {
