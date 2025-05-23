@@ -1,29 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Weatherly</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Weatherly</title>
+
+<style>
+  /* Emoji support + base */
+  body {
+    margin: 0;
+    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Container styling */
+  .container {
+    background: rgba(255 255 255 / 0.85);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.15);
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 15px rgba(116,235,213,0.5);
+    transition: box-shadow 0.3s ease;
+  }
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 15px #74ebd5;
+  }
+
+  #weatherResult {
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
+  /* Cloud animation */
+  .clouds {
+    position: fixed;
+    top: 0;
+    left: -200px;
+    width: 200vw;
+    height: 100vh;
+    background:
+      url('https://i.ibb.co/4pDNDk1/cloud1.png') 0 50px repeat-x,
+      url('https://i.ibb.co/t2PxYFk/cloud2.png') 0 150px repeat-x,
+      url('https://i.ibb.co/vHc89Kj/cloud3.png') 0 250px repeat-x;
+    background-size: 300px 100px;
+    animation: moveClouds 120s linear infinite;
+    opacity: 0.3;
+    z-index: 1;
+  }
+
+  @keyframes moveClouds {
+    0% { background-position: 0 50px, 0 150px, 0 250px; }
+    100% { background-position: 2000px 50px, 1800px 150px, 1600px 250px; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Weatherly</h1>
 
-    <input
-      type="text"
-      id="cityInput"
-      placeholder="Enter city name and press Enter"
-      autocomplete="off"
-    />
+<!-- Clouds background -->
+<div class="clouds"></div>
 
-    <h2>Default Cities Weather</h2>
-    <div id="defaultWeather" class="weather-container"></div>
+<div class="container">
+  <h1>Weatherly ☁️🌤️</h1>
+  <input type="text" id="city" placeholder="Enter city name to get weather" autocomplete="off" />
+  <div id="weatherResult">Loading default city weather...</div>
+</div>
 
-    <h2>Your City Weather</h2>
-    <div id="userWeather" class="weather-container"></div>
-  </div>
+<script>
+  // Default cities to show weather for
+  const defaultCities = ['Paris', 'London', 'Mumbai', 'Coimbatore'];
 
-  <script src="script.js"></script>
+  // Function to get weather for a city by calling your Netlify function
+  async function getWeather(city) {
+    const url = `/.netlify/functions/weather?city=${encodeURIComponent(city)}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('City not found');
+      const data = await response.json();
+      return `
+        <strong>${data.name}, ${data.sys.country}</strong><br>
+        🌡 Temperature: ${data.main.temp} °C<br>
+        🌥 Weather: ${data.weather[0].main}<br>
+        💧 Humidity: ${data.main.humidity}%
+      `;
+    } catch (e) {
+      return `<em>Error fetching weather for ${city}</em>`;
+    }
+  }
+
+  // Show default cities weather on load
+  async function showDefaultWeather() {
+    const container = document.getElementById('weatherResult');
+    container.innerHTML = '';
+    for (const city of defaultCities) {
+      const weatherHTML = await getWeather(city);
+      const cityDiv = document.createElement('div');
+      cityDiv.style.marginBottom = '18px';
+      cityDiv.innerHTML = weatherHTML;
+      container.appendChild(cityDiv);
+    }
+  }
+
+  // Search input event to show searched city weather separately
+  document.getElementById('city').addEventListener('input', async function() {
+    const city = this.value.trim();
+    const container = document.getElementById('weatherResult');
+    if (!city) {
+      showDefaultWeather();
+      return;
+    }
+    container.innerHTML = await getWeather(city);
+  });
+
+  // Initial load
+  showDefaultWeather();
+</script>
+
 </body>
 </html>
