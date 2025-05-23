@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 exports.handler = async function(event, context) {
   const city = event.queryStringParameters.city;
-  const apiKey = process.env.OPENWEATHER_API_KEY; // hidden API key here
+  const apiKey = process.env.OPENWEATHER_API_KEY;
 
   if (!city) {
     return {
@@ -21,6 +21,7 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ error: "City not found or API error" }),
       };
     }
+
     const data = await response.json();
 
     return {
