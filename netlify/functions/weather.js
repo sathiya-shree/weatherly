@@ -1,37 +1,51 @@
-const fetch = require('node-fetch');
+const apiKey = "YOUR_API_KEY_HERE"; // Replace with your OpenWeatherMap API key
 
-exports.handler = async function(event, context) {
-  const city = event.queryStringParameters.city;
-  const apiKey = process.env.OPENWEATHER_API_KEY;
+const form = document.getElementById("cityForm");
+const cityInput = document.getElementById("cityInput");
+const weatherInfo = document.getElementById("weatherInfo");
+const errorMsg = document.getElementById("errorMsg");
 
-  if (!city) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "City parameter is required" }),
-    };
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const city = cityInput.value.trim();
+  if (city) {
+    fetchWeather(city);
   }
+});
 
+async function fetchWeather(city) {
+  errorMsg.textContent = "";
+  weatherInfo.innerHTML = "Loading...";
   try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
     const response = await fetch(url);
 
     if (!response.ok) {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: "City not found or API error" }),
-      };
+      if (response.status === 404) {
+        throw new Error("City not found. Please check the city name.");
+      } else {
+        throw new Error("Failed to fetch weather data.");
+      }
     }
 
     const data = await response.json();
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(data),
-    };
+    displayWeather(data);
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Server error" }),
-    };
+    weatherInfo.innerHTML = "";
+    errorMsg.textContent = error.message;
   }
-};
+}
+
+function displayWeather(data) {
+  const { name, sys, main, weather, wind } = data;
+
+  const weatherHTML = `
+    <h2>${name}, ${sys.country}</h2>
+    <p><strong>${weather[0].main}</strong> - ${weather[0].description}</p>
+    <p>Temperature: ${main.temp.toFixed(1)} °C</p>
+    <p>Feels like: ${main.feels_like.toFixed(1)} °C</p>
+    <p>Humidity: ${main.humidity}%</p>
+    <p>Wind: ${wind.speed} m/s</p>
+  `;
+  weatherInfo.innerHTML = weatherHTML;
+}
