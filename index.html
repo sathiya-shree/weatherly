@@ -9,15 +9,17 @@
 <body>
   <div class="container">
     <h1>Weatherly</h1>
-    <input type="text" id="cityInput" placeholder="Enter city name (for example: New York)" />
-    <button onclick="addCity()">Add City</button>
-    <button onclick="getWeatherForAll()">Get Weather for All</button>
 
-    <p><small>Max 4 cities</small></p>
+    <input type="text" id="cityInput" placeholder="Enter city name (e.g., New York)" />
+    <button onclick="addUserCity()">Add City</button>
 
-    <ul id="cityList"></ul>
+    <p><small>Default cities: Paris, London, Mumbai, Coimbatore</small></p>
 
-    <div id="weatherResult"></div>
+    <h2>Default Cities Weather</h2>
+    <div id="defaultWeather" class="weather-container"></div>
+
+    <h2>Your City Weather</h2>
+    <div id="userWeather" class="weather-container"></div>
   </div>
 
   <script src="script.js"></script>
