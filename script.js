@@ -34,7 +34,7 @@ async function getWeather(city) {
     const data = await response.json();
     return data;
   } catch (error) {
-    return { error: error.message };
+    return { error: error.message, city };
   }
 }
 
@@ -67,9 +67,7 @@ async function loadDefaultCitiesWeather() {
   }
 }
 
-function addUserCity() {
-  const cityInput = document.getElementById('cityInput');
-  const city = cityInput.value.trim();
+async function addUserCity(city) {
   const userWeatherContainer = document.getElementById('userWeather');
 
   if (!city) {
@@ -83,21 +81,31 @@ function addUserCity() {
   }
 
   // Avoid duplicates (case insensitive)
-  if (userCities.some(c => c.toLowerCase() === city.toLowerCase()) || defaultCities.some(c => c.toLowerCase() === city.toLowerCase())) {
+  if (
+    userCities.some(c => c.toLowerCase() === city.toLowerCase()) ||
+    defaultCities.some(c => c.toLowerCase() === city.toLowerCase())
+  ) {
     alert('City already displayed!');
     return;
   }
 
   userCities.push(city);
-  cityInput.value = '';
 
-  // Fetch and display user city weather card
-  getWeather(city).then(data => {
-    userWeatherContainer.appendChild(createWeatherCard(data));
-  });
+  const data = await getWeather(city);
+  userWeatherContainer.appendChild(createWeatherCard(data));
 }
 
-// On page load, show default cities weather
 window.onload = () => {
   loadDefaultCitiesWeather();
+
+  const cityInput = document.getElementById('cityInput');
+  cityInput.addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+      const city = cityInput.value.trim();
+      if (city) {
+        addUserCity(city);
+        cityInput.value = '';
+      }
+    }
+  });
 };
