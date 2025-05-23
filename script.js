@@ -8,6 +8,7 @@ async function getWeather() {
 
   const url = `/.netlify/functions/weather?city=${city}`;
 
+
   try {
     const response = await fetch(url);
     const data = await response.json();
