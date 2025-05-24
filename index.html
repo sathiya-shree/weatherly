@@ -20,48 +20,56 @@
 
     .clouds {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       pointer-events: none;
       overflow: hidden;
       z-index: 0;
     }
-    .cloud {
-      position: absolute;
-      background: linear-gradient(135deg, #f0f4f8, #d9e6f2);
-      border-radius: 50%;
-      opacity: 0.8;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.05));
-      animation: drift 40s linear infinite;
-    }
-    .cloud.small {
-      width: 80px; height: 50px;
-      top: 20%;
-      animation-duration: 35s;
-    }
-    .cloud.medium {
-      width: 140px; height: 80px;
-      top: 40%;
-      animation-duration: 50s;
-    }
-    .cloud.large {
-      width: 220px; height: 120px;
-      top: 60%;
-      animation-duration: 70s;
-    }
-    .cloud:nth-child(1) { left: -220px; animation-delay: 0s; }
-    .cloud:nth-child(2) { left: -140px; animation-delay: 15s; }
-    .cloud:nth-child(3) { left: -180px; animation-delay: 25s; }
-    .cloud:nth-child(4) { left: -80px; animation-delay: 40s; }
 
-    @keyframes drift {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(120vw); }
+    .cloud-img {
+      position: absolute;
+      opacity: 0.6;
+      animation: floatCloud 60s linear infinite;
+    }
+
+    .cloud-img:nth-child(1) {
+      top: 10%;
+      left: -300px;
+      width: 200px;
+      animation-delay: 0s;
+    }
+
+    .cloud-img:nth-child(2) {
+      top: 30%;
+      left: -400px;
+      width: 250px;
+      animation-delay: 20s;
+    }
+
+    .cloud-img:nth-child(3) {
+      top: 50%;
+      left: -500px;
+      width: 300px;
+      animation-delay: 10s;
+    }
+
+    @keyframes floatCloud {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(140vw);
+      }
     }
 
     h1 {
       margin-bottom: 10px;
       color: #004d99;
       text-shadow: 1px 1px 2px #a3c5f7;
+      z-index: 1;
     }
 
     .default-cities {
@@ -169,10 +177,9 @@
 </head>
 <body>
   <div class="clouds" aria-hidden="true">
-    <div class="cloud small"></div>
-    <div class="cloud medium"></div>
-    <div class="cloud large"></div>
-    <div class="cloud small"></div>
+    <img src="https://i.ibb.co/3fzJZVm/cloud1.png" alt="cloud" class="cloud-img">
+    <img src="https://i.ibb.co/jT5zkDt/cloud2.png" alt="cloud" class="cloud-img">
+    <img src="https://i.ibb.co/W0JYNFd/cloud3.png" alt="cloud" class="cloud-img">
   </div>
 
   <h1>Weatherly</h1>
