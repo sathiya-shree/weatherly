@@ -16,52 +16,71 @@
       flex-direction: column;
       align-items: center;
       padding: 40px 20px;
+      position: relative;
     }
 
-    .clouds {
+    .bubbles {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
       z-index: 0;
     }
 
-    .cloud-img {
+    .bubble {
       position: absolute;
-      opacity: 0.6;
-      animation: floatCloud 60s linear infinite;
+      bottom: -100px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      animation: rise 20s infinite ease-in;
+      opacity: 0.5;
     }
 
-    .cloud-img:nth-child(1) {
-      top: 10%;
-      left: -300px;
-      width: 200px;
-      animation-delay: 0s;
+    .bubble:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      left: 10%;
+      animation-duration: 25s;
     }
 
-    .cloud-img:nth-child(2) {
-      top: 30%;
-      left: -400px;
-      width: 250px;
-      animation-delay: 20s;
+    .bubble:nth-child(2) {
+      width: 50px;
+      height: 50px;
+      left: 25%;
+      animation-duration: 20s;
     }
 
-    .cloud-img:nth-child(3) {
-      top: 50%;
-      left: -500px;
-      width: 300px;
-      animation-delay: 10s;
+    .bubble:nth-child(3) {
+      width: 100px;
+      height: 100px;
+      left: 40%;
+      animation-duration: 30s;
     }
 
-    @keyframes floatCloud {
+    .bubble:nth-child(4) {
+      width: 60px;
+      height: 60px;
+      left: 65%;
+      animation-duration: 22s;
+    }
+
+    .bubble:nth-child(5) {
+      width: 40px;
+      height: 40px;
+      left: 80%;
+      animation-duration: 28s;
+    }
+
+    @keyframes rise {
       0% {
-        transform: translateX(0);
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
       }
       100% {
-        transform: translateX(140vw);
+        transform: translateY(-120vh) scale(1.2);
+        opacity: 0;
       }
     }
 
@@ -91,6 +110,7 @@
       text-align: center;
       transition: transform 0.3s ease;
     }
+
     .city-card:hover {
       transform: scale(1.05);
       box-shadow: 0 12px 25px rgba(0,0,0,0.15);
@@ -131,6 +151,7 @@
       outline-color: #4a8cd8;
       transition: border-color 0.3s ease;
     }
+
     input[type="text"]:focus {
       border-color: #2c6fbd;
       box-shadow: 0 0 8px #2c6fbdaa;
@@ -147,6 +168,7 @@
       box-shadow: 0 5px 10px rgba(44,111,189,0.4);
       transition: background-color 0.3s ease;
     }
+
     button:hover {
       background-color: #1b4a7a;
     }
@@ -165,10 +187,12 @@
       position: relative;
       min-height: 120px;
     }
+
     #searchedCityWeather h2 {
       margin-bottom: 8px;
       color: #004080;
     }
+
     #searchedCityWeather .weather-emoji {
       font-size: 2rem;
       margin-bottom: 12px;
@@ -176,10 +200,12 @@
   </style>
 </head>
 <body>
-  <div class="clouds" aria-hidden="true">
-    <img src="https://i.ibb.co/3fzJZVm/cloud1.png" alt="cloud" class="cloud-img">
-    <img src="https://i.ibb.co/jT5zkDt/cloud2.png" alt="cloud" class="cloud-img">
-    <img src="https://i.ibb.co/W0JYNFd/cloud3.png" alt="cloud" class="cloud-img">
+  <div class="bubbles" aria-hidden="true">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
   </div>
 
   <h1>Weatherly</h1>
