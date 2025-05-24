@@ -19,44 +19,39 @@
       position: relative;
     }
 
-    .droplets {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: 0;
-      pointer-events: none;
-    }
+  .droplets {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
 
-    .droplet {
-      position: absolute;
-      top: -60px;
-      width: 14px;
-      height: 22px;
-      background: rgba(255, 255, 255, 0.5);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      transform: rotate(25deg);
-      animation: fall 6s linear infinite;
-    }
+.droplet {
+  position: absolute;
+  top: -40px;
+  width: 10px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.85); /* Increased opacity */
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform: rotate(25deg);
+  animation: fall 3.5s linear infinite;
+}
 
-    .droplet:nth-child(1) { left: 10%; animation-delay: 0s; }
-    .droplet:nth-child(2) { left: 25%; animation-delay: 1s; width: 10px; height: 18px; }
-    .droplet:nth-child(3) { left: 40%; animation-delay: 2s; width: 12px; height: 20px; }
-    .droplet:nth-child(4) { left: 65%; animation-delay: 1.5s; width: 9px; height: 15px; }
-    .droplet:nth-child(5) { left: 80%; animation-delay: 0.5s; width: 11px; height: 17px; }
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(25deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) rotate(25deg);
+    opacity: 0;
+  }
+}
 
-    @keyframes fall {
-      0% {
-        transform: translateY(0) rotate(25deg);
-        opacity: 0.8;
-      }
-      100% {
-        transform: translateY(120vh) rotate(25deg);
-        opacity: 0;
-      }
-    }
 
     h1 {
       margin-bottom: 10px;
@@ -175,12 +170,21 @@
 </head>
 <body>
   <div class="droplets" aria-hidden="true">
-    <div class="droplet"></div>
-    <div class="droplet"></div>
-    <div class="droplet"></div>
-    <div class="droplet"></div>
-    <div class="droplet"></div>
-  </div>
+  <!-- Generate more droplets -->
+  <div class="droplet" style="left: 5%; animation-delay: 0s;"></div>
+  <div class="droplet" style="left: 12%; animation-delay: 0.8s;"></div>
+  <div class="droplet" style="left: 18%; animation-delay: 1.2s; width: 12px; height: 22px;"></div>
+  <div class="droplet" style="left: 25%; animation-delay: 0.5s; width: 9px; height: 16px;"></div>
+  <div class="droplet" style="left: 32%; animation-delay: 1s;"></div>
+  <div class="droplet" style="left: 40%; animation-delay: 0.3s;"></div>
+  <div class="droplet" style="left: 47%; animation-delay: 1.3s; width: 13px; height: 24px;"></div>
+  <div class="droplet" style="left: 55%; animation-delay: 0.2s; width: 11px; height: 20px;"></div>
+  <div class="droplet" style="left: 62%; animation-delay: 1.1s;"></div>
+  <div class="droplet" style="left: 70%; animation-delay: 0.7s;"></div>
+  <div class="droplet" style="left: 78%; animation-delay: 1.5s;"></div>
+  <div class="droplet" style="left: 85%; animation-delay: 0.4s;"></div>
+  <div class="droplet" style="left: 92%; animation-delay: 1.6s; width: 14px; height: 25px;"></div>
+</div>
 
   <h1>Weatherly</h1>
 
