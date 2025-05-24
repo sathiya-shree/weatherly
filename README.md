@@ -49,12 +49,9 @@ The app uses a serverless function proxy to communicate with a weather API, ensu
 - Add dark mode.
 
 
-#Contribution
-
-Contributions are welcome! Feel free to open issues or submit pull requests to improve Weatherly.
-
 
 #License
+
 © 2025 @sathiyashree
 
 All rights reserved.
